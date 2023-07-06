@@ -14,11 +14,24 @@ int main(void) {
   or_sr(0x18);		/* CPU off, GIE on */
 }
 
-//int led_on = 0;
+int led_on = 0;
+oncePerSecond() {              /* called once per second */
+  led_on = !led_on;
+  if (led_on)                  /* toggle green LED on & off once per second */
+    P!OUT |= LED_GREEN;
+  else
+    P!OUT &= ~LED_GREEN;
+}
 
+int secondCount = 0;
 void
 __interrupt_vec(WDT_VECTOR) WDT()	/* 250 interrupts/sec */
 {
+  secondCOunt++;
+  if (secondCount == 250) {
+    oncePerSecond();
+    secondCount = 0;
+  }
   P1OUT |= LED_GREEN;
 } 
 

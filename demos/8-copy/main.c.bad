@@ -1,0 +1,32 @@
+#include <msp430.h>
+
+int main(void) {
+  WDTCTL = WDTPW | WDTHOLD;
+
+  //--setup ports
+  P1DIR |= BIT0;  //Config P1.0 to an output (LED1)
+  P1OUT &= ~BIT0; //Clear P1.0 initially (LED1)
+
+  P1DIR &= ~BIT3; //Config P3.1 as input (SW1)
+  P1REN |= BIT3;  //Enable resistor
+  P1OUT |= BIT3;  //Makes resistor a pull up
+  P1IES |= BIT3;  // Makes sensitivity H-to-L
+
+  //PMSCTL0 &= ~LOCKLPMS; //Turn on digital I/O
+
+  //--setup IRQ
+  P1IE |= BIT3;   //Enable P4.1 IRQ
+  __enable_interrupt(); // Enable Maskable IRQ
+  P1IFG &= ~BIT3;  // Clear P4.1 IRQ FLAG
+
+  while(1) {}; //loop forever.
+  
+  return 0;
+}
+
+//--- ISRs
+#pragma vector = PORT1_VECTOR
+__interrupt void ISR_S1(void) {
+  P1OUT ^= BIT0;
+  P1IFG &= ~BIT3;
+}

@@ -56,6 +56,28 @@ void siren_leds(){
   P1OUT &= ~LEDS;
   
 }
+ 
+void sleep(double);
+
+void resetPattern(int x){
+  
+  for (int i=0; i<10; ++ i ) {
+    if ( x/(i+1) < 10 ) break;
+    buzzer_set_period(x/(i+1));
+    sleep(1000);
+  }
+
+  for ( int i=0; i<10; ++i ) {
+    buzzer_set_period(x/(10-i));
+    sleep(1000);
+  }
+}
+
+void sleep(double n){
+  while(n>0){
+    n--;
+  }
+}
 
 void
 switch_interrupt_handler()
@@ -94,7 +116,8 @@ __interrupt_vec(PORT1_VECTOR) Port_1(){
      buzzer_set_period(1000);
    } else if ( P2IFG & TSW3 ) {
      P2IFG &= ~TSW3;
-     buzzer_set_period(3000);
+     resetPattern(3000);
+     buzzer_set_period(0);
    } else if ( P2IFG & TSW4 ) {
      P2IFG &= ~TSW4;
      buzzer_set_period(0);

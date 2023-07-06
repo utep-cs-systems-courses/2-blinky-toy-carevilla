@@ -1,0 +1,21 @@
+.data
+n:	.word 10
+
+
+.text
+	top
+	cmp.b #0 , &n
+	goto out	 /* if carry flag on go to exit while */
+
+	xor &P1OUT , &LEDS
+	call  #__delay_cycles(1000000)
+	sub #1, &n
+	goto top
+	
+	out
+	bic &P1OUT , ~LEDS
+
+
+
+	
+	
